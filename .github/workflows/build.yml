@@ -113,7 +113,7 @@ jobs:
     name: Publish release
     needs: build-win64
     runs-on: ubuntu-latest
-    if: ${{ env.IS_RELEASE == 'true' }}
+    if: ${{ github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'gittyup_v') }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
