@@ -290,6 +290,14 @@ void TestTreeView::dirtySubmoduleAndStagedSubmodule() {
 
   {
     QAbstractItemModel *stagedModel = stagedTree->model();
+
+    {
+      // Wait for refresh
+      auto timeout = Timeout(10000, "Repository didn't refresh in time");
+      while (stagedModel->rowCount() < 1)
+        qWait(300);
+    }
+
     QCOMPARE(stagedModel->rowCount(), 1);
     QModelIndex index = stagedModel->index(0, 0); // submodules folder
     QVERIFY(index.isValid());
@@ -327,6 +335,14 @@ void TestTreeView::conflictedAndStagedFile() {
 
   {
     QAbstractItemModel *stagedModel = stagedTree->model();
+
+    {
+      // Wait for refresh
+      auto timeout = Timeout(10000, "Repository didn't refresh in time");
+      while (stagedModel->rowCount() < 1)
+        qWait(300);
+    }
+
     QCOMPARE(stagedModel->rowCount(), 1);
     QModelIndex index = stagedModel->index(0, 0); // "folder" folder
     QVERIFY(index.isValid());
