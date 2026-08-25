@@ -11,6 +11,7 @@
 #define BITBUCKET_H
 
 #include "Account.h"
+#include <QStringList>
 
 class Bitbucket : public Account {
   Q_OBJECT
@@ -24,6 +25,15 @@ public:
   void connect(const QString &password = QString()) override;
 
   static QString defaultUrl();
+
+private:
+  bool get(const QNetworkRequest &request, const QString &password,
+           const char *phase);
+  void handleReply(QNetworkReply *reply);
+
+  QStringList mWorkspaces;
+  int mPending = 0;
+  bool mFailed = false;
 };
 
 #endif
