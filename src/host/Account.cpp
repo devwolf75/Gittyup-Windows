@@ -202,13 +202,14 @@ QString Account::helpText(Kind kind) {
                 "field instead.");
 
     case Bitbucket:
-      return tr("<b>Note:</b> App passwords are deprecated. Use your "
-                "Atlassian email as username and an <a href='https://"
-                "support.atlassian.com/bitbucket-cloud/docs/api-tokens/'>API "
-                "token</a> in the password field instead. The token needs "
-                "these scopes: 'read:user:bitbucket', 'read:workspace:bitbucket' "
-                "and 'read:repository:bitbucket' (plus 'write:repository:"
-                "bitbucket' to push over HTTPS).");
+      return tr(
+          "<b>Note:</b> App passwords are deprecated. Use your "
+          "Atlassian email as username and an <a href='https://"
+          "support.atlassian.com/bitbucket-cloud/docs/api-tokens/'>API "
+          "token</a> in the password field instead. The token needs "
+          "these scopes: 'read:user:bitbucket', 'read:workspace:bitbucket' "
+          "and 'read:repository:bitbucket' (plus 'write:repository:"
+          "bitbucket' to push over HTTPS).");
 
     case Beanstalk:
       return QString();

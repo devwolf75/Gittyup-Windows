@@ -20,7 +20,8 @@ if(APPLE)
   set(QT_PLUGINS ${QT_PLUGINS} QCocoaIntegrationPlugin QMacStylePlugin)
 elseif(GITTYUP_PACK_WIN64)
   set(QT_PLUGINS ${QT_PLUGINS} QWindowsIntegrationPlugin
-                 QModernWindowsStylePlugin)
+                 QModernWindowsStylePlugin QTlsBackendOpenSSLPlugin
+                 QSchannelBackendPlugin)
 else()
   set(QT_PLUGINS ${QT_PLUGINS} QXcbIntegrationPlugin
                  QComposePlatformInputContextPlugin)
