@@ -13,6 +13,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QProcess>
+#include <QProcessEnvironment>
 #include <QTextStream>
 #include <QUrl>
 
@@ -111,26 +112,44 @@ QString GitCredential::command() const {
   }
 
 #ifdef Q_OS_WIN
-  // Look for GIT CLI installation path
-  QString gitPath = QStandardPaths::findExecutable("git");
-  if (!gitPath.isEmpty()) {
+  // Look for the GIT CLI installation path. Iterate over all PATH entries
+  // instead of using the first git.exe found: it may be a shim (e.g. Scoop)
+  // whose directory does not contain the credential helpers.
+  const QStringList pathEntries =
+      QProcessEnvironment::systemEnvironment()
+          .value(QStringLiteral("PATH"))
+          .split(QLatin1Char(';'), Qt::SkipEmptyParts);
+
+  for (const QString &entry : pathEntries) {
+    QString gitPath =
+        QStandardPaths::findExecutable(QStringLiteral("git"), {entry});
+    if (gitPath.isEmpty())
+      continue;
+
     QDir gitDir = QFileInfo(gitPath).dir();
-    if (gitDir.dirName() == "cmd" || gitDir.dirName() == "bin") {
-      gitDir.cdUp();
+    if (gitDir.dirName() != QLatin1String("cmd") &&
+        gitDir.dirName() != QLatin1String("bin")) {
+      continue;
+    }
+
+    gitDir.cdUp();
 
 #ifdef Q_OS_WIN64
-      gitDir.cd("mingw64");
+    gitDir.cd(QStringLiteral("mingw64"));
 #else
-      gitDir.cd("mingw32");
+    gitDir.cd(QStringLiteral("mingw32"));
 #endif
 
-      gitDir.cd("bin");
+    // Newer Git for Windows versions may install the credential helpers
+    // into libexec/git-core instead of bin.
+    for (const char *subdir : {"bin", "libexec/git-core"}) {
+      QDir helperDir(gitDir);
+      if (!helperDir.cd(QLatin1String(subdir)))
+        continue;
 
-      candidate =
-          QStandardPaths::findExecutable(name, QStringList(gitDir.path()));
-      if (!candidate.isEmpty()) {
+      candidate = QStandardPaths::findExecutable(name, {helperDir.path()});
+      if (!candidate.isEmpty())
         return candidate;
-      }
     }
   }
 #endif
